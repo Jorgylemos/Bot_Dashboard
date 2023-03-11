@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import express, { Request, Response, Router } from 'express'
+import express, { Express, json, urlencoded, Request, Response, Router } from 'express'
 import cors from 'cors'
 import http from 'http'
 
@@ -9,7 +9,7 @@ import { PORT, BOT_TOKEN } from '../config'
 
 dotenv.config()
 
-const app = express()
+const app: Express = express()
 
 const port = PORT as any
 
@@ -18,8 +18,8 @@ const port = PORT as any
     try {
 
         app.use(cors())
-        app.use(express.json())
-        app.use(express.urlencoded({ extended: true }))
+        app.use(json())
+        app.use(urlencoded({ extended: true }))
 
         await client.on('ready', () => {
             console.log(`🤖 Bot ${client.user.tag} is on!`)

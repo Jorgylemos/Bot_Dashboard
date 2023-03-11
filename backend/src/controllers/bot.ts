@@ -5,10 +5,30 @@ import { client } from '../utils/DiscordClient'
 const prisma = new PrismaClient()
 
 class BotControllers {
-    async Bot(req: Request, res: Response){
-        const bot = await prisma.bot.findUnique({
+
+    FindID = async () =>{
+       const botId = await prisma.bot.findUnique({
             where: {
                 bot: client.user.tag
+            },
+            select: {
+                id: true,
+            }
+        })
+
+        return botId?.id
+    }
+
+    Bot = async (req: Request, res: Response) => {
+
+        const botId = await this.FindID().then((res) => res)
+
+        const bot = await prisma.bot.findUnique({
+            where: {
+               id: botId 
+            },
+            select: {
+                bot: true
             }
         })
 
@@ -28,11 +48,57 @@ class BotControllers {
         }
     }
 
-    async BotSettings(){
+    BotSettings = async (req: Request, res: Response) => {
+
+        const botId = await this.FindID().then((res) => res)
+
+        const BotData = await prisma.bot.findFirst({
+            where: {
+                id: botId
+            },
+            select: {
+                bot: true,
+                prefix: true
+            }
+        })
+
+        res.json({ BotData })
 
     }
 
-    async BotSettingsUpdate(){
+    BotSettingsUpdate = async (req: Request, res: Response) => {
+        
+        try {
+            const { prefix } = req.body
+
+            const botId = await this.FindID().then((res) => res)
+
+            const botTag = await prisma.bot.findFirst({
+                where: {
+                    id: botId
+                },
+                select: {
+                    bot: true,
+                }
+            })
+
+            if(botTag?.bot !== client.user.tag){
+                console.log("Bot not updated!")
+            } else {
+                console.log("Bot updated!")
+                await prisma.bot.update({
+                where: {
+                    id: botId
+                },
+                data: {
+                    prefix: prefix
+                }
+            })
+            }
+        
+        } catch(err) {
+            console.error(err)
+        }
 
     }
 }

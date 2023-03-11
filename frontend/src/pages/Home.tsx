@@ -1,34 +1,49 @@
-import axios from 'axios'
-import { useState, useCallback, useEffect } from 'react'
-import { useQuery } from 'react-query'
+import { useState } from 'react'
+import { PutData } from '../hooks/PutData'
+import { Spinner } from '../components/spinner/Spinner';
+import { FetchData } from '../hooks/FetchData';
+
+type Props = {
+  BotData: BotData
+}
+
+type BotData = {
+  bot: string;
+  prefix: string;
+}
 
 export function Home() {
 
-  const [data, setData] = useState()
+  const [prefix, setPrefix] = useState<string>('')
 
-  const handleSubmit = async () => {
-    // await axios.put('http://localhost:5000/bot')
-    const res = await axios.get('http://localhost:5000/bot', {
-      headers: {
-        Authorization: "Bearer "
-      }
-    })
-    setData(res.data)
-  }
+  const token: string = "admin"
 
-  console.log(data)
+  const { state, handleSubmit } = PutData('/bot/settings/update', { prefix: prefix }, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  const { data, isError, isLoading } = FetchData<Props>('/bot/settings', {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
 
   return (
     <div>
-      {/* <form onSubmit={handleSubmit}>
-        <label>
-          Prefix:{" "}
-          <input type="text" />
-        </label>
+      
+      {isLoading ? <Spinner /> : (
+        <>
+          <h1>Bot atual: {data?.BotData.bot}</h1>
+          <h3>Prefixo atual: {data?.BotData.prefix}</h3>
+        </>
+      )}
 
-        <button type='submit'>Enviar</button>
-      </form> */}
-      <button onClick={handleSubmit} >Clique</button>
+      {state.isLoading && <Spinner /> }
+      <input type="text" onChange={(e) => setPrefix(e.target.value)} />
+      <button onClick={handleSubmit}>Clique</button>
     </div>
   );
 }

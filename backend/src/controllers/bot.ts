@@ -94,6 +94,8 @@ class BotControllers {
                     prefix: prefix
                 }
             })
+
+            return res.status(200).send("Ok")
             }
         
         } catch(err) {

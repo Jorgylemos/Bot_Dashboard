@@ -1,6 +1,6 @@
 import { FetchData } from '../../hooks/FetchData'
 import { PutData } from '../../hooks/PutData'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { Container } from './style'
 import { ThemeContext } from 'styled-components'
 import { Spinner } from '../../components/spinner/Spinner'
@@ -16,7 +16,7 @@ type BotData = {
 
 export function Settings() {
 
-  // const { link } = useContext(ThemeContext)
+  const [ isDisable, setDisable ] = useState<boolean>(false)
 
   const token = "admin"
 
@@ -29,19 +29,46 @@ export function Settings() {
   return (
     <Container>
       {isLoading && <Spinner />}
-      <form>
-        <label>
-          Bot atual: 
-            <input disabled type="text" placeholder={data?.BotData.bot} />
-        </label>
-        <label>
-          Prefixo atual:
-            <input disabled type="text" style={{textAlign: 'center'}} placeholder={data?.BotData.prefix} />
-        </label>
+      { isDisable ? 
+        (
+        <>
+          <form>
+            <label>
+              Bot atual: 
+                <input type="text" disabled placeholder={data?.BotData.bot} />
+            </label>
+            <label>
+              Prefixo atual:
+                <input type="text" required style={{textAlign: 'center'}} placeholder={data?.BotData.prefix} />
+            </label>
+            <div>
+              <button type='submit'>Enviar</button>
+            </div>
+        </form>
         <div>
-          <button type='submit'>Enviar</button>
+          <button onClick={() => setDisable(false)}>Voltar</button>
         </div>
-      </form>
+        </>
+        )
+      :  (
+      <>
+      <form>
+          <label>
+            Bot atual: 
+              <input disabled type="text" placeholder={data?.BotData.bot} />
+          </label>
+          <label>
+            Prefixo atual:
+              <input disabled type="text" style={{textAlign: 'center'}} placeholder={data?.BotData.prefix} />
+          </label>
+        </form>
+        <div>
+          <button onClick={() => setDisable(true)}>Mudar</button>
+        </div>
+      </>
+
+      ) 
+      }
     </Container>
   )
 }

@@ -29,5 +29,17 @@ export const Container = styled.div`
             transform: translateY(4px)
         }
     }
+
+    input {
+        background-color: inherit;
+        border: 1.4px #f7b801 solid;
+        background: rgba(0,0,0,0.1);
+        border-radius: 6px;
+        padding: 5px;
+        color: #f7b801;
+        ::placeholder {
+            color: #f7b801;
+        }
+    }
 `
 
